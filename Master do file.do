@@ -1,6 +1,6 @@
 ********************************************************************************
 *This Do File Was Created on Thursday: 30.10.2019 @ 12:00 PM
-*Created by Muhame Alon 
+*Created by:  Muhame Alon 
 *Purpose: To Analyze Endline Survey by NP_Endline_Evaluation_South_Sudan
                      **** Master Do file*** 
 ********************SECTION 1***************************************************
@@ -35,7 +35,7 @@
 
 clear all
 set more off 
-#delimit;
+
 
 cd "E:\Research Progress\NP_Endline"
 *import dataset ;
@@ -46,6 +46,8 @@ global data "E:\Research Progress\NP_Endline\NP_Endline\data"
 global output "E:\Research Progress\NP_Endline\NP_Endline\results"
 
 // Renaming Variables in the dataset;//
+
+**SECTION 1 ** Pre-Processing Data *
 
 ren C state
 ren Q11 respodentsex 
@@ -62,20 +64,11 @@ ren Q19 havehosteddisplacedpeople
 ren Q21 twomostimportantsourcesincome
 ren Q110 totalmale
 ren Q110_Other totalfemale
-ren Q111_Total totalfemale
-ren Q21_A total_male 
+ren Q111_Total totalfemale_other
+*ren Q21_A total_male 
 ren Q111A male_living_HHold
 ren Q111B female_living_HHold
 ren Q112 numberofchildren_under18
-
-* Data Inspection
-describe
-tab maritalstatus
-su maritalstatus
-*Table analysis 
-table maritalstatus, col row
-table respodentsex state,col row
-
 
 *Labelling variables 
 label var A "Personal Indetification Number"
@@ -97,73 +90,234 @@ label var  totalmale "Other_Income_sources"
 label var totalfemale "Total_Living_Household"
 label var Q111A "Total_Male_Living_HHold"
 label var Q111B "Total_Female_Living_HHold"
+label var twomostimportantsourcesincome "income sources"
+label var numberofchildren_under18 "Children_Under 18 in house"
+labe var totalfemale_other "Other female in house"
 
 *Label define and label value
+destring state, replace 
+
+label define state 1 "Lankien" 2 "Ganyiel" 3 "Rubkonaiv" 4 "Yei" 
+
+label values state state  
+
+destring ageofrespondent, replace 
+
+label define ageofrespondent 1 "18-28" 2 "29-39" 3 "40-50" 4 "51-61" 5 "62+"
+
+label values ageofrespondent ageofrespondent
+
 destring respodentsex, gen(gender)
+
 label define gender 1 "Male" 2 "Female"
+
 label values gender gender
 
-label define Highest_Level_Education 1 "No education" 2 "Primary" 3 "Secondary/Technical" 4 "Tertiary/University" 99 "Refused To Answer"
-label define HHead 1 "Man" 2 "Woman" 3 "Child headed Household" 
-label define HHead_Relative 1 "Head Household" 2 "Spouse" 3 "Son/Daughter of Household" 4 "Other"
-label define Marital_status 1 "Married" 2 "Living with a partner" 3 "Single" 4 "Widowed" 5 "Others"
-label define HHold_Not_Moved_Before 1 "Last 12 months" 2 "1-5 years" 3 "5-10 years" 88 "Don't Know" 99 "Refused"
-label define Two_Sources_Income 1 "Crop farming" 2 "Livestock Rearing Incl. Fishing" 3 "Wages or Salary Earner" 4 "Business/Trading" 5 "Cash Remittance" 6 "Support from NGO" 7 "Others" 99 "Refused" 
+destring highestlevelofeducation, gen(Education)
+
+label define Education 1 "No education" 2 "Primary" 3 "Secondary/Technical" 4 "Tertiary/University" 99 "Refused To Answer"
+
+label values Education Education 
+
+destring hhhead, gen(househead)
+
+label define househead 1 "Man" 2 "Woman" 3 "Child headed Household" 
+
+label values househead househead
+
+destring reltohhhead, gen(relative)
+
+label define relative 1 "Head Household" 2 "Spouse" 3 "Son/Daughter of Household" 4 "Other"
+
+label values relative relative
+
+destring maritalstatus, gen(mariage)
+
+label define mariage 1 "Married" 2 "Living with a partner" 3 "Single" 4 "Widowed" 5 "Others"
+
+label value mariage mariage
+
+destring hasyourhholdbeenhere, gen(Not_migrated)
+
+label define Not_migrated 1 "Last 12 months" 2 "1-5 years" 3 "5-10 years" 88 "Don't Know" 99 "Refused"
+
+label values Not_migrated Not_migrated
+
+destring twomostimportantsourcesincome, gen(income) 
+
+label define income 1 "Crop farming" 2 "Livestock Rearing Incl. Fishing" 3 "Wages or Salary Earner" 4 "Business/Trading" 5 "Cash Remittance" 6 "Support from NGO" 7 "Others" 99 "Refused" 
+
+label values income income 
+
+destring howlongdidyoucomehere, gen(stayed)
+
+label define stayed 1 "Yes" 2 "No" 88 "Don't Know" 99 "Refused to Answer" 
+
+label values stayed stayed 
+
+destring havehosteddisplacedpeople, gen(hosted)
+
+label define hosted 1 "yes" 2 "No" 
+
+label values hosted hosted 
+
+
+
+save clean_01, replace 
+
+
+* Data Inspection/Take a look at cleaned data Now ** 
+
+describe
+
+tab gender 
+
+su mariage 
+
+*Table analysis 
+
+table mariage state, col row
+
+table ageofrespodent state,col row
+
+
 
 ********************SECTION 2***************************************************
-ren Q21 safetyandsecurity 
-label var safetyandsecurity  "Safety_security_Area"
-label define Safety_security_Area 1 "safe" 2 "Somewhat safe" 3 "Somewhat Unsafe" 4 "Unsafe" 88 "Don't Know" 99 "Refused"
-label values safety safety 
-ren Q22 incidentsofviolence
-label var incidentsofviolence "Violence_Occurance"
-label define Violence_Occurance 1 "Frequent" 2 "Somewhat Frequent" 3 "Infrequent" 88 "Dont Know" 99 "Refused" 
-label values Violence_Occurance Violence_Occurance
-ren (Q231 Q232 Q233 Q234 Q235 Q236 Q237 Q238 Q239 Q2310 Q2388 Q2399) /// 
-( robery harassent theft abduction murder assaults sexualattacks revengeattacks violenceagainstwomengirls violenceagainstchildren dontknow refused )
 
-ren Q241 financialinsecurity
-ren Q242 fewopportunities  
-ren Q243 crime
-ren Q244 cattle
-ren Q245 smallarmsguns
-ren Q246 alcoholdrugs
-ren Q247 marriage
-ren Q248 competitionforresources
-ren Q249 familyissues
-ren Q2410 intercommunalconflict
-ren Q2411 securityagencies 
-ren Q2412 rumors
-ren Q2413 limtedfreedom
-ren Q2414 competetionlocalleadership
-ren Q2415 competepolitical
-ren Q2488 donotkonow
-ren Q2499 refused2
+cd "E:\Research Progress\NP_Endline\section_01 clean dataset" 
+
+use clean_01, clear 
+
+ren Q22 incidentsofviolence
+
+label var incidentsofviolence "Violence_Occurance"
+
+destring incidentsofviolence, gen(violence)
+
+label define violence 1 "Frequent" 2 "Somewhat Frequent" 3 "Infrequent" 88 "Dont Know" 99 "Refused"
+
+drop incidentsofviolence
+
+label values violence violence
+
+/*ren (Q231 Q232 Q233 Q234 Q235 Q236 Q237 Q238 Q239 Q2310 Q2388 Q2399) /// 
+( robery harassent theft abduction murder assaults sexualattacks revengeattacks violenceagainstwomengirls violenceagainstchildren dontknow refused )*/
+
+***What type of violent crime or violent crime occurred most often here? (Multiple responses)*****
+
+destring Q231, gen(Q231_a)
+destring Q232, gen(Q232_b)
+destring Q233, gen(Q233_c)
+destring Q234, gen(Q234_d)
+destring Q235, gen(Q235_e)
+destring Q236, gen(Q236_f)
+destring Q237, gen(Q237_g)
+destring Q238, gen(Q238_h)
+destring Q239, gen(Q239_i)
+destring Q2310, gen(Q2310_j)
+destring Q2388, gen(Q2388_k)
+destring Q2399, gen(Q2399_l)
+
+label var Q231_a "What type of violent crime or violent occured most often here(1.Robbery)"
+label var Q232_b "What type of violent crime or violent occured most often here(2.Harrassment)"
+label var Q233_c "What type of violent crime or violent occured most often here(3.Theft)"
+label var Q234_d "What type of violent crime or violent occured most often here(4.Abduction/arbitrary detention)"
+label var Q235_e "What type of violent crime or violent occured most often here(5.Murder)"
+label var Q236_f "What type of violent crime or violent occured most often here(6.Assaults/beatings)"
+label var Q237_g "What type of violent crime or violent occured most often here(7.sexual attacks)"
+label var Q238_h "What type of violent crime or violent occured most often here(8.revenge attacks)"
+label var Q239_i "What type of violent crime or violent occured most often here(9.violence against women/girls in the home)"
+label var Q2310_j "What type of violent crime or violent occured most often here(10.violence against children in the homes)"
+label var Q2388_k "What type of violent crime or violent occured most often here(88.Don't know)"
+label var Q2399_l "What type of violent crime or violent occured most often here(99.Refuse to answer)"
+
+logout, save("E:\Work Consultancy\Documents for Godfrey\NP_Endline\results\desccrime.doc") word replace: ///
+mrtab Q232_b Q233_c Q234_d Q235_e Q236_f Q237_g Q238_h Q239_i Q2310_j, include response(1 2 3 4 5 6 7 8) sort des
+mrtab Q232_b Q233_c Q234_d Q235_e Q236_f Q237_g Q238_h Q239_i Q2310_j,by(state) col include response(1 2 3 4 5 6 7 8) sort des
+
+** What factors do you associate with biggest sources of conflict or insecurity in your commmunity(Multiple responses)***
+destring Q241, gen(Q241_a)
+drop if Q241_a==2
+drop if Q241_a==6
+destring Q242, gen(Q242_b)
+destring Q243, gen(Q243_c)
+drop if Q243_c==4
+destring Q244, gen(Q244_d)
+destring Q245, gen(Q245_e)
+drop if Q245_e==4
+destring Q246, gen(Q246_f)
+destring Q247, gen(Q247_g)
+destring Q248, gen(Q248_h)
+destring Q249, gen(Q249_i)
+destring Q2410, gen(Q2410_j)
+destring Q2411, gen(Q2411_k)
+destring Q2412, gen(Q2412_l)
+destring Q2413, gen(Q2413_m)
+destring Q2414, gen(Q2414_n)
+destring Q2415, gen(Q2415_o)
+
+label var Q241_a "What factors would you associate as the biggest source of conflict and insecurity in your community(1.Financial insecurity)"
+label var Q242_b "What factors would you associate as the biggest source of conflict and insecurity in your community(2.few opportunities for young people)"
+label var Q243_c "What factors would you associate as the biggest source of conflict and insecurity in your community(3.Crime)"
+label var Q244_d "What factors would you associate as the biggest source of conflict and insecurity in your community(4.cattle)"
+label var Q245_e "What factors would you associate as the biggest source of conflict and insecurity in your community(5.availability of small arms(guns))"
+label var Q246_f "What factors would you associate as the biggest source of conflict and insecurity in your community(6.use of alchol/drugs)"
+label var Q247_g "What factors would you associate as the biggest source of conflict and insecurity in your community(7.Marriage/dowry, domestic violence etc)"
+label var Q248_h "What factors would you associate as the biggest source of conflict and insecurity in your community(8.competition for resources)"
+label var Q249_i "What factors would you associate as the biggest source of conflict and insecurity in your community(9.Family issues"
+label var Q2410_j "What factors would you associate as the biggest source of conflict and insecurity in your community(10.inter-communal conflict)"
+label var Q2411_k "What factors would you associate as the biggest source of conflict and insecurity in your community(11.security agencies(polic, army))"
+label var Q2412_l "What factors would you associate as the biggest source of conflict and insecurity in your community(12.rumours/uncertainity about security)"
+label var Q2413_m "What factors would you associate as the biggest source of conflict and insecurity in your community(13.limited freedom of movement)"
+label var Q2414_n "What factors would you associate as the biggest source of conflict and insecurity in your community(14.competition over local leadership)"
+label var Q2415_o "What factors would you associate as the biggest source of conflict and insecurity in your community(15.competition over political office)"
+
+logout, save("E:\Work Consultancy\Documents for Godfrey\NP_Endline\results\desccconflict.doc") word replace: ///
+mrtab Q241_a Q242_b Q243_c Q244_d Q245_e Q246_f Q247_g Q248_h Q249_i Q2410_j Q2411_k Q2412_l Q2413_m Q2414_n Q2415_o , include response(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15) sort des
+
+mrtab Q241_a Q242_b Q243_c Q244_d Q245_e Q246_f Q247_g Q248_h Q249_i Q2410_j Q2411_k Q2412_l Q2413_m Q2414_n Q2415_o ,by(state) col include response(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15) sort des
+mrtab Q241_a Q242_b Q243_c Q244_d Q245_e Q246_f Q247_g Q248_h Q249_i Q2410_j Q2411_k Q2412_l Q2413_m Q2414_n Q2415_o ,by(state) col include response(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15) sort des
+
 
 ren Q25 havebeenthreatned
+
 ren Q26 numberoftimesthreatned
 
 ren Q271 waterpoints
+
 ren Q272 foodorotheritemdistributn
+
 ren Q273 latrines
+
 ren Q274 insideyourhouse
+
 ren Q275 inpublicspace
+
 ren Q276 outsideincommunity
+
 ren Q277 intownormarket
+
 ren Q2788 dontknowQ2788
+
 ren Q2799 refusedQ2799
+
 ren Q28 sexofattacked
+
 ren Q210 sexofattacker 
+
 ren Q211 safetyandsecurityofcommunity
+
 ren Q212 howsafedoyouwalkafterdark 
+
 ren Q213 howsafedoyouwalkduringdaytime
+
 ren Q214 howfeeltowalkoutsidevillage
 
 
 
-*****************************************  Analysis & Graphs for Final WriteUp***********************************************************
+*****************************************  Analysis & Graphs for Final Write Up***********************************************************
 ********************Stacked Charts**************
-graph bar (count) [fw=gender], over(education, descending) over(marital) percent subtitle(% of Marital) stack asyvars bar(5, bfcolor(red*0.8)) bar(4, bfcolor(red*0.3) blcolor(red*0.8)) bar(3, bfcolor(blue*0.2) blcolor(blue*1.2)) bar(2, bfcolor(blue*0.7) blcolor(blue*1.2)) bar(1, bcolor(blue*1.2)) legend(pos(3) col(1)) ysc(r(-5 100)) yla(, ang(h))
+graph bar (count) [fw=gender], over(Education, descending) over(marital) percent subtitle(% of Marital) stack asyvars bar(5, bfcolor(red*0.8)) bar(4, bfcolor(red*0.3) blcolor(red*0.8)) bar(3, bfcolor(blue*0.2) blcolor(blue*1.2)) bar(2, bfcolor(blue*0.7) blcolor(blue*1.2)) bar(1, bcolor(blue*1.2)) legend(pos(3) col(1)) ysc(r(-5 100)) yla(, ang(h))
 
 *** For Comparision Mosaiac Graph /spline plot**************
 spineplot health age [w=freq], bar1(color(gs4)) bar2(color(gs8))  bar3(color(blue*0.2)) bar4(color(blue*0.6)) bar5(color(blue))  xla(, labsize(*0.8) axis(2)) percent xla(0(20)100) yla(0(20)100, axis(2))
@@ -311,80 +465,7 @@ table Incidents_Violence, by(state)
 graph bar Incidents_Violence,  by(state)
 graph pie state, over(Incidents_Violence) missing plabel(_all percent) title(Occurance of Incidents of  Violence in Comunity) legend(on cols(7))
 
-***What type of violent crime or violent crime occurred most often here? (Multiple responses)*****
 
-destring Q231, gen(Q231_a)
-destring Q232, gen(Q232_b)
-destring Q233, gen(Q233_c)
-destring Q234, gen(Q234_d)
-destring Q235, gen(Q235_e)
-destring Q236, gen(Q236_f)
-destring Q237, gen(Q237_g)
-destring Q238, gen(Q238_h)
-destring Q239, gen(Q239_i)
-destring Q2310, gen(Q2310_j)
-destring Q2388, gen(Q2388_k)
-destring Q2399, gen(Q2399_l)
-
-label var Q231_a "What type of violent crime or violent occured most often here(1.Robbery)"
-label var Q232_b "What type of violent crime or violent occured most often here(2.Harrassment)"
-label var Q233_c "What type of violent crime or violent occured most often here(3.Theft)"
-label var Q234_d "What type of violent crime or violent occured most often here(4.Abduction/arbitrary detention)"
-label var Q235_e "What type of violent crime or violent occured most often here(5.Murder)"
-label var Q236_f "What type of violent crime or violent occured most often here(6.Assaults/beatings)"
-label var Q231_g "What type of violent crime or violent occured most often here(7.sexual attacks)"
-label var Q238_h "What type of violent crime or violent occured most often here(8.revenge attacks)"
-label var Q239_i "What type of violent crime or violent occured most often here(9.violence against women/girls in the home)"
-label var Q2310_j "What type of violent crime or violent occured most often here(10.violence against children in the homes)"
-label var Q2388_k "What type of violent crime or violent occured most often here(88.Don't know)"
-label var Q2399_l "What type of violent crime or violent occured most often here(99.Refuse to answer)"
-
-logout, save("E:\Work Consultancy\Documents for Godfrey\NP_Endline\results\desccrime.doc") word replace: ///
-mrtab Q232_b Q233_c Q234_d Q235_e Q236_f Q231_g Q238_h Q239_i Q2310_j, include response(1 2 3 4 5 6 7 8) sort des
-mrtab Q232_b Q233_c Q234_d Q235_e Q236_f Q231_g Q238_h Q239_i Q2310_j, by( Q11) col include response(1 2 3 4 5 6 7 8) sort des
-
-** What factors do you associate with biggest sources of conflict or insecurity in your commmunity(Multiple responses)***
-destring Q241, gen(Q241_a)
-drop if Q241_a==2
-drop if Q241_a==6
-destring Q242, gen(Q242_b)
-destring Q243, gen(Q243_c)
-drop if Q243_c==4
-destring Q244, gen(Q244_d)
-destring Q245, gen(Q245_e)
-drop if Q245_e==4
-destring Q246, gen(Q246_f)
-destring Q247, gen(Q247_g)
-destring Q248, gen(Q248_h)
-destring Q249, gen(Q249_i)
-destring Q2410, gen(Q2410_j)
-destring Q2411, gen(Q2411_k)
-destring Q2412, gen(Q2412_l)
-destring Q2413, gen(Q2413_m)
-destring Q2414, gen(Q2414_n)
-destring Q2415, gen(Q2415_o)
-
-label var Q241_a "What factors would you associate as the biggest source of conflict and insecurity in your community(1.Financial insecurity)"
-label var Q242_b "What factors would you associate as the biggest source of conflict and insecurity in your community(2.few opportunities for young people)"
-label var Q243_c "What factors would you associate as the biggest source of conflict and insecurity in your community(3.Crime)"
-label var Q244_d "What factors would you associate as the biggest source of conflict and insecurity in your community(4.cattle)"
-label var Q245_e "What factors would you associate as the biggest source of conflict and insecurity in your community(5.availability of small arms(guns))"
-label var Q246_f "What factors would you associate as the biggest source of conflict and insecurity in your community(6.use of alchol/drugs)"
-label var Q247_g "What factors would you associate as the biggest source of conflict and insecurity in your community(7.Marriage/dowry, domestic violence etc)"
-label var Q248_h "What factors would you associate as the biggest source of conflict and insecurity in your community(8.competition for resources)"
-label var Q249_i "What factors would you associate as the biggest source of conflict and insecurity in your community(9.Family issues"
-label var Q2410_j "What factors would you associate as the biggest source of conflict and insecurity in your community(10.inter-communal conflict)"
-label var Q2411_k "What factors would you associate as the biggest source of conflict and insecurity in your community(11.security agencies(polic, army))"
-label var Q2412_l "What factors would you associate as the biggest source of conflict and insecurity in your community(12.rumours/uncertainity about security)"
-label var Q2413_m "What factors would you associate as the biggest source of conflict and insecurity in your community(13.limited freedom of movement)"
-label var Q2414_n "What factors would you associate as the biggest source of conflict and insecurity in your community(14.competition over local leadership)"
-label var Q2415_o "What factors would you associate as the biggest source of conflict and insecurity in your community(15.competition over political office)"
-
-logout, save("E:\Work Consultancy\Documents for Godfrey\NP_Endline\results\desccconflict.doc") word replace: ///
-mrtab Q241_a Q242_b Q243_c Q244_d Q245_e Q246_f Q247_g Q248_h Q249_i Q2410_j Q2411_k Q2412_l Q2413_m Q2414_n Q2415_o , include response(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15) sort des
-
-mrtab Q241_a Q242_b Q243_c Q244_d Q245_e Q246_f Q247_g Q248_h Q249_i Q2410_j Q2411_k Q2412_l Q2413_m Q2414_n Q2415_o ,by(Q11) col include response(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15) sort des
-mrtab Q241_a Q242_b Q243_c Q244_d Q245_e Q246_f Q247_g Q248_h Q249_i Q2410_j Q2411_k Q2412_l Q2413_m Q2414_n Q2415_o ,by(C) col include response(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15) sort des
 
 *** Q25 Has any of your family member been attacked, threatened or harrassed in last 12 months****
 destring Q25, gen(Attacked) 
